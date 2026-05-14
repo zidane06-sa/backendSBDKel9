@@ -36,6 +36,23 @@ async function listArticles(_req, res) {
   }
 }
 
+async function getArticleById(req, res) {
+  try {
+    const article = await articleService.getArticleById(req.params.id);
+
+    return res.status(200).json({
+      message: "Berhasil mengambil artikel",
+      data: article,
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || (error.name === "CastError" ? 400 : 500);
+    return res.status(statusCode).json({
+      message: error.message || "Gagal mengambil artikel",
+      error: statusCode === 500 ? error.message : undefined,
+    });
+  }
+}
+
 async function updateArticle(req, res) {
   try {
     const article = await articleService.updateArticleById(req.params.id, req.body);
@@ -69,6 +86,7 @@ async function deleteArticle(req, res) {
 module.exports = {
   createArticles,
   listArticles,
+  getArticleById,
   updateArticle,
   deleteArticle,
 };

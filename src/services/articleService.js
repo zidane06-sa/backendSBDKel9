@@ -56,6 +56,24 @@ async function getArticles() {
   };
 }
 
+async function getArticleById(articleId) {
+  if (!articleId) {
+    const error = new Error("ID artikel wajib diisi");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const article = await Article.findById(articleId).lean();
+
+  if (!article) {
+    const error = new Error("Artikel tidak ditemukan");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return article;
+}
+
 async function updateArticleById(articleId, payload) {
   if (!articleId) {
     const error = new Error("ID artikel wajib diisi");
@@ -100,6 +118,7 @@ async function deleteArticleById(articleId) {
 module.exports = {
   saveArticles,
   getArticles,
+  getArticleById,
   updateArticleById,
   deleteArticleById,
 };
