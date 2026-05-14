@@ -25,6 +25,15 @@ app.use(
   })
 );
 
+app.use("/api", async (_req, _res, next) => {
+  try {
+    await connectDatabase(mongoUri, mongoDbName);
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+});
+
 app.get("/", (_req, res) => {
   res.json({
     message: "Backend berjalan",
@@ -37,6 +46,13 @@ app.get("/", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/articles", articleRoutes);
+
+app.use((error, _req, res, _next) => {
+  return res.status(500).json({
+    message: "Gagal menghubungkan database",
+    error: error.message,
+  });
+});
 
 app.use((_req, res) => {
   res.status(404).json({ message: "Route tidak ditemukan" });
