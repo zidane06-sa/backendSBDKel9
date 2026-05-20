@@ -2,32 +2,32 @@
 
 Backend service untuk platform publikasi artikel terkurasi dengan mekanisme review editorial.
 
-## 📚 Project Description
+## Project Description
 
 Platform publikasi artikel terkurasi yang dirancang khusus untuk komunitas tech dan business. Saat ini, banyak platform publikasi artikel bersifat umum sehingga kualitas dan relevansi konten tidak selalu terjaga. 
 
-### 🎯 Masalah yang Diselesaikan
+### Masalah yang Diselesaikan
 - Mahasiswa di bidang teknologi seringkali hanya mengakses sumber teknis tanpa pemahaman konteks bisnis yang memadai
 - Kualitas dan relevansi konten di platform umum tidak selalu terjaga
 - Dibutuhkan platform yang mengintegrasikan wawasan teknologi dan bisnis
 
-### ✨ Solusi
+### Solusi
 Sistem publikasi artikel dengan:
 - **Mekanisme Review Editorial**: Setiap artikel melalui verifikasi admin sebelum dipublikasikan
 - **Kontrol Kualitas**: Konten terjamin kualitas dan relevansinya
 - **Dual Perspective**: Konten yang menggabungkan wawasan teknologi dan bisnis
 
-### 👥 Target User
+### Target User
 - Mahasiswa di bidang teknologi dan bisnis
 - Praktisi teknologi dan bisnis
 - Individu yang ingin memahami interkoneksi antara teknologi dan bisnis
 
-### 🚀 Visi
+### Visi
 Menghasilkan generasi inovator yang memahami bahwa solusi tidak hanya harus canggih, tetapi juga relevan, bernilai, dan berdampak nyata.
 
 ---
 
-## 🛠️ Setup & Installation
+## Setup & Installation
 
 ### Prerequisites
 - Node.js v14+ 
@@ -92,7 +92,7 @@ Kunjungi `http://localhost:4000` untuk melihat routes yang tersedia:
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### System Architecture
 
@@ -179,7 +179,7 @@ Client → Get Articles → Auth Middleware (Verify JWT) → Article Controller
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 miniproject_sbd_backend/
@@ -208,7 +208,7 @@ miniproject_sbd_backend/
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
@@ -224,7 +224,7 @@ miniproject_sbd_backend/
 
 ---
 
-## 🔐 Authentication Flow
+## Authentication Flow
 
 Platform menggunakan JWT (JSON Web Token) untuk authentication:
 
@@ -236,7 +236,7 @@ Platform menggunakan JWT (JSON Web Token) untuk authentication:
 
 ---
 
-## 📝 Dependencies
+## Dependencies
 
 - **express** - Web framework
 - **mongoose** - MongoDB ODM
@@ -248,7 +248,7 @@ Platform menggunakan JWT (JSON Web Token) untuk authentication:
 
 ---
 
-## 🚀 Development Tips
+## Development Tips
 
 - Use `npm run dev` untuk hot-reload development
 - Check `.env` file configuration sebelum run
@@ -257,7 +257,7 @@ Platform menggunakan JWT (JSON Web Token) untuk authentication:
 
 ---
 
-## 📌 Notes
+## Notes
 
 - Backend ini menggunakan MongoDB sebagai primary database
 - Admin verification diperlukan untuk mempublikasikan artikel
