@@ -7,13 +7,30 @@ dotenv.config();
 
 const app = express();
 const port = Number(process.env.PG_PORT) || 4001;
-const connStr = process.env.POSTGRES_CONNECTION_STRING || process.env.POSTGRES_URL;
+const postgresDb = process.env.POSTGRES_DATABASE || 'minpro_sbd';
+const rawConnStr = process.env.POSTGRES_CONNECTION_STRING || process.env.POSTGRES_URL;
+
+function normalizeConnectionString(connectionString, databaseName) {
+  if (!connectionString) return '';
+
+  const url = new URL(connectionString);
+  if (databaseName) {
+    url.pathname = `/${databaseName}`;
+  }
+
+  return url.toString();
+}
+
+const connStr = normalizeConnectionString(rawConnStr, postgresDb);
 
 if (!connStr) {
   console.error('POSTGRES_CONNECTION_STRING tidak ditemukan di .env');
 }
 
-const pool = new Pool({ connectionString: connStr });
+const pool = new Pool({
+  connectionString: connStr,
+  ssl: { rejectUnauthorized: false },
+});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(cors());

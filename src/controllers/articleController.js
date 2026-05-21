@@ -1,6 +1,5 @@
 const articleService = require("../services/articleService");
 
-// Admin: bulk upsert (flow lama)
 async function createArticles(req, res) {
   try {
     const result = await articleService.saveArticles(req.body);
@@ -13,7 +12,6 @@ async function createArticles(req, res) {
   }
 }
 
-// Guest (atau siapapun yang login): submit artikel, masuk ke pending
 async function submitArticle(req, res) {
   try {
     const article = await articleService.submitArticle(req.body, req.user.sub);
@@ -23,12 +21,12 @@ async function submitArticle(req, res) {
   }
 }
 
-// Publik: hanya artikel approved
 async function listArticles(req, res) {
   try {
     const filters = {
       category: req.query.category,
       topic: req.query.topic,
+      search: req.query.search,
     };
     const result = await articleService.getArticles(filters);
     console.log(`GET /api/articles - fetched ${result.data.length} items in ${result.durationMs.toFixed(2)} ms`);
@@ -38,10 +36,14 @@ async function listArticles(req, res) {
   }
 }
 
-// Admin: lihat semua artikel (bisa filter ?status=pending)
 async function listAllArticles(req, res) {
   try {
-    const filters = { status: req.query.status };
+    const filters = {
+      status: req.query.status,
+      category: req.query.category,
+      topic: req.query.topic,
+      search: req.query.search,
+    };
     const result = await articleService.getAllArticles(filters);
     return res.status(200).json({ total: result.total, data: result.data });
   } catch (error) {
@@ -113,6 +115,16 @@ async function deleteArticle(req, res) {
   }
 }
 
+async function incrementViews(req, res) {
+  try {
+    const article = await articleService.incrementViews(req.params.id);
+    return res.status(200).json({ message: "Views berhasil diperbarui", data: article });
+  } catch (error) {
+    const statusCode = error.statusCode || (error.name === "CastError" ? 400 : 500);
+    return res.status(statusCode).json({ message: error.message || "Gagal memperbarui views" });
+  }
+}
+
 module.exports = {
   createArticles,
   submitArticle,
@@ -124,4 +136,5 @@ module.exports = {
   rejectArticle,
   updateArticle,
   deleteArticle,
+  incrementViews,
 };

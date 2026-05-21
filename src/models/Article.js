@@ -11,12 +11,12 @@ const articleSchema = new mongoose.Schema(
     summary: { type: String, default: "" },
     content: { type: [String], default: [] },
     scraped_at: { type: String, default: "" },
+    views: { type: Number, default: 0 },
 
-    // --- Submission flow ---
     status: {
       type: String,
       enum: ["approved", "pending", "rejected"],
-      default: "approved", // artikel lama tetap approved
+      default: "approved", 
     },
     submittedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -36,8 +36,7 @@ const articleSchema = new mongoose.Schema(
   }
 );
 
-// Only enforce unique index when `url` is a string value.
-// This prevents multiple documents with `url: null` from colliding.
+
 articleSchema.index(
   { url: 1 },
   { unique: true, partialFilterExpression: { url: { $type: "string" } } }

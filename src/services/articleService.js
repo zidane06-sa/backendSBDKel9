@@ -1,5 +1,29 @@
 const Article = require("../models/Article");
 
+function escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function buildSearchCondition(search) {
+  const normalized = String(search || "").trim();
+  if (!normalized) {
+    return null;
+  }
+
+  const regex = new RegExp(escapeRegExp(normalized), "i");
+
+  return {
+    $or: [
+      { title: regex },
+      { summary: regex },
+      { category: regex },
+      { topic: regex },
+      { url: regex },
+      { content: regex },
+    ],
+  };
+}
+
 function normalizeIncomingItems(payload) {
   if (payload == null) return [];
   if (Array.isArray(payload)) return payload;
@@ -82,21 +106,39 @@ async function submitArticle(payload, userId) {
 async function getArticles(filters = {}) {
   const start = process.hrtime.bigint();
 
-  const baseStatusQuery = {
-    $or: [
-      { status: "approved" },
-      { status: { $exists: false } },
-    ],
-  };
+  const conditions = [
+    {
+      $or: [
+        { status: "approved" },
+        { status: { $exists: false } },
+      ],
+    },
+  ];
 
-  const query = { ...baseStatusQuery };
-  if (filters.category) query.category = filters.category;
-  if (filters.topic) query.topic = filters.topic;
+  if (filters.category) {
+    conditions.push({
+      $or: [{ category: filters.category }, { topic: filters.category }],
+    });
+  }
+
+  if (filters.topic) {
+    conditions.push({
+      $or: [{ topic: filters.topic }, { category: filters.topic }],
+    });
+  }
+
+  const searchCondition = buildSearchCondition(filters.search);
+  if (searchCondition) {
+    conditions.push(searchCondition);
+  }
+
+  const query = conditions.length === 1 ? conditions[0] : { $and: conditions };
 
   const data = await Article.find(query)
     .sort({ createdAt: -1 })
     .populate("submittedBy", "username email")
-    .lean();
+    .lean()
+    .exec();
 
   const durationMs = Number(process.hrtime.bigint() - start) / 1e6;
   return { total: data.length, data, durationMs };
@@ -105,21 +147,43 @@ async function getArticles(filters = {}) {
 // Admin: lihat semua artikel, bisa filter by status
 async function getAllArticles(filters = {}) {
   const start = process.hrtime.bigint();
-  const query = {};
+  const conditions = [];
 
   if (filters.status) {
     if (filters.status === "approved") {
-      query.$or = [{ status: "approved" }, { status: { $exists: false } }];
+      conditions.push({
+        $or: [{ status: "approved" }, { status: { $exists: false } }],
+      });
     } else {
-      query.status = filters.status;
+      conditions.push({ status: filters.status });
     }
   }
+
+  if (filters.category) {
+    conditions.push({
+      $or: [{ category: filters.category }, { topic: filters.category }],
+    });
+  }
+
+  if (filters.topic) {
+    conditions.push({
+      $or: [{ topic: filters.topic }, { category: filters.topic }],
+    });
+  }
+
+  const searchCondition = buildSearchCondition(filters.search);
+  if (searchCondition) {
+    conditions.push(searchCondition);
+  }
+
+  const query = conditions.length === 0 ? {} : conditions.length === 1 ? conditions[0] : { $and: conditions };
 
   const data = await Article.find(query)
     .sort({ createdAt: -1 })
     .populate("submittedBy", "username email")
     .populate("reviewedBy", "username email")
-    .lean();
+    .lean()
+    .exec();
 
   const durationMs = Number(process.hrtime.bigint() - start) / 1e6;
   return { total: data.length, data, durationMs };
@@ -224,6 +288,28 @@ async function deleteArticleById(articleId) {
   return article;
 }
 
+async function incrementViews(articleId) {
+  if (!articleId) {
+    const error = new Error("ID artikel wajib diisi");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const article = await Article.findByIdAndUpdate(
+    articleId,
+    { $inc: { views: 1 } },
+    { new: true }
+  ).lean();
+
+  if (!article) {
+    const error = new Error("Artikel tidak ditemukan");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return article;
+}
+
 module.exports = {
   saveArticles,
   submitArticle,
@@ -243,7 +329,8 @@ module.exports = {
       .sort({ createdAt: -1 })
       .populate('submittedBy', 'username email')
       .populate('reviewedBy', 'username email')
-      .lean();
+      .lean()
+      .exec();
 
     const durationMs = Number(process.hrtime.bigint() - start) / 1e6;
     return { total: data.length, data, durationMs };
@@ -253,4 +340,5 @@ module.exports = {
   rejectArticle,
   updateArticleById,
   deleteArticleById,
+  incrementViews,
 };

@@ -39,12 +39,14 @@ Buat file `.env` di root directory:
 
 ```env
 PORT=4000
-MONGO_URI=mongodb://localhost:27017
-MONGO_DB_NAME=article_platform
-JWT_SECRET=your_secret_key_here
-CORS_ORIGINS=http://localhost:3000,http://localhost:5173
-NODE_ENV=development
+MONGO_URI=mongodb+srv://steven41_db_user:<password>@prak-sbd.yvoriwd.mongodb.net/?appName=prak-sbd
+MONGO_DB_NAME=
+CORS_ORIGINS=http://localhost:3000
 ```
+
+Catatan:
+- Jika `MONGO_DB_NAME` dikosongkan, backend memakai database default dari MongoDB Atlas.
+- Ganti `<password>` dengan password Atlas yang valid.
 
 ### Installation Steps
 
