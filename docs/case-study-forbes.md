@@ -18,7 +18,7 @@ Sebelum beralih ke MongoDB, Forbes mengandalkan relational database yang menimbu
 ## 3. Alasan Forbes Memilih Document Store
 Forbes memilih Document Store (MongoDB) karena konten media secara natural berbentuk dokumen dengan struktur yang bervariasi per entitas. Keunggulan utama:
 
-- Skema fleksibel — setiap dokumen bisa memiliki struktur berbeda tanpa migrasi.
+- Skema fleksibel, setiap dokumen jadi bisa memiliki struktur berbeda tanpa migrasi.
 - Menyimpan data tersambung dalam satu dokumen tanpa JOIN kompleks.
 - Biaya infrastruktur dan pengembangan lebih rendah untuk CMS skala besar.
 - Performa lebih cepat untuk tipe query konten yang beragam.
